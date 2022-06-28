@@ -1,6 +1,5 @@
 package com.awards.golden.data.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +12,4 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
 	
 	Optional<Producer> findByNameIgnoreCase(String name);
 	
-	List<Producer> findAllByMinWinningRangeNotNullOrderByMinWinningRange();
-	
-	List<Producer> findAllByMaxWinningRangeNotNullOrderByMaxWinningRangeDesc();
-
 }

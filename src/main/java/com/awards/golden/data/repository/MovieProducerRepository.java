@@ -12,5 +12,9 @@ import com.awards.golden.data.entity.Producer;
 public interface MovieProducerRepository extends JpaRepository<MovieProducer, Long> {
 	
 	List<MovieProducer> findByProducerAndMovieIsWinnerOrderByMovieYearDesc(Producer producer, Boolean isWinner);
+	
+	List<MovieProducer> findAllByWinningRangeNotNullOrderByWinningRange();
+	
+	List<MovieProducer> findAllByWinningRangeNotNullOrderByWinningRangeDesc();
 
 }

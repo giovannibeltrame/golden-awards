@@ -37,5 +37,11 @@ public class MovieProducer {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "producer_id")
 	private Producer producer;
+	
+	@Column
+	private Integer winningRange;
+	
+	@Column
+	private Integer lastWinYear;
 
 }

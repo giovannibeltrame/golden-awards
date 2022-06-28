@@ -39,24 +39,6 @@ public class Producer implements Serializable {
 	@Column(length = 256)
 	private String name;
 	
-	@Column
-	private Integer minWinningRange;
-	
-	@Column
-	private Integer maxWinningRange;
-	
-	@Column
-	private Integer minPreviousWin;
-	
-	@Column
-	private Integer minFollowingWin;
-	
-	@Column
-	private Integer maxPreviousWin;
-	
-	@Column
-	private Integer maxFollowingWin;
-	
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "producer")
 	private List<MovieProducer> movieProducer;

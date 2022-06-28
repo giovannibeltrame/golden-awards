@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.awards.golden.data.dto.WinningRangeDTO;
 import com.awards.golden.data.entity.Producer;
 import com.awards.golden.data.repository.ProducerRepository;
-import com.awards.golden.service.ProducerService;
+import com.awards.golden.service.MovieProducerService;
 
 @RestController
 @RequestMapping("/producers")
@@ -28,7 +28,7 @@ public class ProducerController {
 	private ProducerRepository producerRepository;
 	
 	@Autowired
-	private ProducerService producerService;
+	private MovieProducerService producerService;
 	
 	@GetMapping
 	public List<Producer> getProducers() {
