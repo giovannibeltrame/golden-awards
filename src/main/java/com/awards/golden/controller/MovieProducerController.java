@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.awards.golden.data.dto.WinningRangeDTO;
 import com.awards.golden.data.entity.MovieProducer;
 import com.awards.golden.data.repository.MovieProducerRepository;
+import com.awards.golden.service.MovieProducerService;
 
 @RestController
 @RequestMapping("/movie-producer")
@@ -24,6 +26,9 @@ public class MovieProducerController {
 	
 	@Autowired
 	private MovieProducerRepository movieProducerRepository;
+	
+	@Autowired
+	private MovieProducerService movieProducerService;
 	
 	@GetMapping
 	public List<MovieProducer> getMovieProducers() {
@@ -59,6 +64,12 @@ public class MovieProducerController {
 		if (optMovieProducer.isPresent()) {
 			movieProducerRepository.deleteById(idMovieProducer);
 		}
+	}
+	
+	@GetMapping("/winning-range")
+	public WinningRangeDTO getWinningRange() {
+		movieProducerService.calculateWinningRange();
+		return movieProducerService.getWinningRange();
 	}
 
 }

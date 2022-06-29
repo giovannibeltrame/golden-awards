@@ -21,6 +21,7 @@ import com.univocity.parsers.common.record.Record;
 public class MovieService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MovieService.class);
+	private static final String YES = "yes";
 	
 	@Autowired
 	private MovieRepository movieRepository;
@@ -40,7 +41,7 @@ public class MovieService {
 					.year(record.getInt("year"))
 					.title(record.getString("title"))
 					.studios(record.getString("studios"))
-					.isWinner("yes".equalsIgnoreCase(record.getString("winner")) ? Boolean.TRUE : Boolean.FALSE)
+					.isWinner(YES.equalsIgnoreCase(record.getString("winner")) ? Boolean.TRUE : Boolean.FALSE)
 					.build();
 			movieRepository.save(movie);
 

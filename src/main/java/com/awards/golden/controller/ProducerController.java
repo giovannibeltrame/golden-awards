@@ -27,9 +27,6 @@ public class ProducerController {
 	@Autowired
 	private ProducerRepository producerRepository;
 	
-	@Autowired
-	private MovieProducerService producerService;
-	
 	@GetMapping
 	public List<Producer> getProducers() {
 		return producerRepository.findAll();
@@ -66,10 +63,4 @@ public class ProducerController {
 		}
 	}
 	
-	@GetMapping("/winning-range")
-	public WinningRangeDTO getWinningRange() {
-		producerService.calculateWinningRange();
-		return producerService.getWinningRange();
-	}
-
 }

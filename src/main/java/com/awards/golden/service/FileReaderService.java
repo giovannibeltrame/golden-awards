@@ -21,6 +21,7 @@ import com.univocity.parsers.csv.CsvParserSettings;
 public class FileReaderService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileReaderService.class);
+	private static final String MOVIELIST_CSV = "movielist.csv";
 
 	@Autowired
 	private MovieService movieService;
@@ -28,7 +29,7 @@ public class FileReaderService {
 	public void readFile(InputStream inputStream) throws Exception {
 		try {
 			if (Objects.isNull(inputStream)) {
-				inputStream = this.getFileInputStream();
+				inputStream = this.getFileInputStream(MOVIELIST_CSV);
 			}
 			movieService.getMoviesFromRecords(this.readCsvFile(inputStream, Boolean.TRUE));
 		} catch (Exception e) {
@@ -45,9 +46,8 @@ public class FileReaderService {
 		return parser.parseAllRecords(inputStream);
 	}
 
-
-	public FileInputStream getFileInputStream() throws FileNotFoundException {
-		return new FileInputStream(new File(new FileSystemResource("movielist.csv").getFile().getAbsolutePath()));
+	public FileInputStream getFileInputStream(String filePath) throws FileNotFoundException {
+		return new FileInputStream(new File(new FileSystemResource(filePath).getFile().getAbsolutePath()));
 	}
 
 }
