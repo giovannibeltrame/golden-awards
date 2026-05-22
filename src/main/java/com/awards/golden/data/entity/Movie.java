@@ -14,17 +14,6 @@ import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
 @Entity
 @Table(name = "movies")
 public class Movie implements Serializable {
@@ -35,21 +24,69 @@ public class Movie implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "release_year")
 	private Integer year;
-	
+
 	@Column(length = 256)
 	private String title;
-	
+
 	@Column(length = 256)
 	private String studios;
-	
-    @Column(name = "winner")
+
+	@Column(name = "winner")
 	private Boolean isWinner;
-    
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
 	private List<MovieProducer> movieProducer;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getStudios() {
+		return studios;
+	}
+
+	public void setStudios(String studios) {
+		this.studios = studios;
+	}
+
+	public Boolean getIsWinner() {
+		return isWinner;
+	}
+
+	public void setIsWinner(Boolean isWinner) {
+		this.isWinner = isWinner;
+	}
+
+	public List<MovieProducer> getMovieProducer() {
+		return movieProducer;
+	}
+
+	public void setMovieProducer(List<MovieProducer> movieProducer) {
+		this.movieProducer = movieProducer;
+	}
 
 }

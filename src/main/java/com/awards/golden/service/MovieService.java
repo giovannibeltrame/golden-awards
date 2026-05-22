@@ -36,13 +36,11 @@ public class MovieService {
 		records.forEach(record -> {
 			LOGGER.debug("RECORD: {}", record);
 
-			var movie = Movie
-					.builder()
-					.year(record.getInt("year"))
-					.title(record.getString("title"))
-					.studios(record.getString("studios"))
-					.isWinner(YES.equalsIgnoreCase(record.getString("winner")))
-					.build();
+			var movie = new Movie();
+			movie.setYear(record.getInt("year"));
+			movie.setTitle(record.getString("title"));
+			movie.setStudios(record.getString("studios"));
+			movie.setIsWinner(YES.equalsIgnoreCase(record.getString("winner")));
 			movieRepository.save(movie);
 
 			var producers = this.replaceCommas(Objects.requireNonNullElse(record.getString("producers"), ""));
@@ -55,14 +53,14 @@ public class MovieService {
 		Splitter.on(",").trimResults().split(producers).forEach(producer -> {
 			LOGGER.debug("Producer: {}", producer);
 			var optProducer = producerRepository.findByNameIgnoreCase(producer);
-			MovieProducer movieProducer;
-			if (optProducer.isPresent()) {
-				movieProducer = MovieProducer.builder().movie(movie).producer(optProducer.get()).build();
-			} else {
-				var newProducer = Producer.builder().name(producer).build();
-				producerRepository.save(newProducer);
-				movieProducer = MovieProducer.builder().movie(movie).producer(newProducer).build();
-			}
+			var resolvedProducer = optProducer.orElseGet(() -> {
+				var newProducer = new Producer();
+				newProducer.setName(producer);
+				return producerRepository.save(newProducer);
+			});
+			var movieProducer = new MovieProducer();
+			movieProducer.setMovie(movie);
+			movieProducer.setProducer(resolvedProducer);
 			movieProducerRepository.save(movieProducer);
 		});
 	}
