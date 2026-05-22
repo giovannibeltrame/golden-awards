@@ -1,7 +1,8 @@
 # Read Me First
-This REST API was developed based on the specifications contained in the file:
+This REST API was developed based on the specifications contained in the files:
 
-* Especificação Backend.pdf
+* backend_specification_en.pdf (English)
+* backend_specification_pt_br.pdf (Portuguese)
 
 # Getting Started
 
