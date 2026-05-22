@@ -1,33 +1,34 @@
 # Read Me First
-A presente API REST foi desenvolvida a partir das especificações presentes no arquivo:
+This REST API was developed based on the specifications contained in the files:
 
-* Especificação Backend.pdf
+* backend_specification_en.pdf (English)
+* backend_specification_pt_br.pdf (Portuguese)
 
 # Getting Started
 
-##### Configurando o arquivo movieslist.csv
-Para a aplicação realizar a leitura dos dados ao iniciar, deve existir na pasta raiz do projeto o arquivo:
+##### Configuring the movielist.csv file
+For the application to read the data on startup, the following file must exist in the project root folder:
 
 > - movielist.csv
 
-Para ser lido corretamente, o arquivo deve possuir a estrutura de dados definida a seguir
+To be read correctly, the file must have the data structure defined below:
 
 > - year;title;studios;producers;winner
 
-##### Executando a aplicação
+##### Running the application
 
-Para iniciar a aplicação, você deve rodar o comando abaixo na pasta raiz do projeto no terminal do seu sistema operacional:
+To start the application, run the command below in the project root folder from your operating system's terminal:
 
 `mvnw spring-boot:run`
 
-##### Executando os testes de integração
+##### Running the integration tests
 
-Para executar os testes de integração da API, execute o comando abaixo:
+To run the API integration tests, execute the command below:
 
 `mvnw clean test`
 
-##### Conhecendo as operações da API
+##### Exploring the API operations
 
-Depois de iniciada a aplicação, você pode ver todas as operações e métodos disponíveis na API no link abaixo:
+Once the application is running, you can see all the operations and methods available in the API at the link below:
 
-`http://localhost:8080/swagger-ui/`
+`http://localhost:8080/swagger-ui.html`

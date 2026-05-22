@@ -2,9 +2,6 @@ package com.awards.golden.service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-
-import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,46 +34,43 @@ public class MovieService {
 
 	public void getMoviesFromRecords(List<Record> records) {
 		records.forEach(record -> {
-			LOGGER.debug("RECORD: " + record);
+			LOGGER.debug("RECORD: {}", record);
 
-			Movie movie = Movie
-					.builder()
-					.year(record.getInt("year"))
-					.title(record.getString("title"))
-					.studios(record.getString("studios"))
-					.isWinner(YES.equalsIgnoreCase(record.getString("winner")) ? Boolean.TRUE : Boolean.FALSE)
-					.build();
+			var movie = new Movie();
+			movie.setYear(record.getInt("year"));
+			movie.setTitle(record.getString("title"));
+			movie.setStudios(record.getString("studios"));
+			movie.setIsWinner(YES.equalsIgnoreCase(record.getString("winner")));
 			movieRepository.save(movie);
 
-			String producers = Objects.requireNonNullElse(record.getString("producers"), "");
-			producers = this.replaceCommas(producers);
+			var producers = this.replaceCommas(Objects.requireNonNullElse(record.getString("producers"), ""));
 
 			this.getMovieProducersFromProducers(movie, producers);
 		});
 	}
 
-	private void getMovieProducersFromProducers(Movie movie, @Nonnull String producers) {
+	private void getMovieProducersFromProducers(Movie movie, String producers) {
 		Splitter.on(",").trimResults().split(producers).forEach(producer -> {
-			LOGGER.debug("Producer: " + producer);
-			Optional<Producer> optProducer = producerRepository.findByNameIgnoreCase(producer);
-			MovieProducer movieProducer;
-			if (optProducer.isPresent()) {
-				movieProducer = MovieProducer.builder().movie(movie).producer(optProducer.get()).build();
-			} else {
-				Producer newProducer = Producer.builder().name(producer).build();
-				producerRepository.save(newProducer);
-				movieProducer = MovieProducer.builder().movie(movie).producer(newProducer).build();
-			}
+			LOGGER.debug("Producer: {}", producer);
+			var optProducer = producerRepository.findByNameIgnoreCase(producer);
+			var resolvedProducer = optProducer.orElseGet(() -> {
+				var newProducer = new Producer();
+				newProducer.setName(producer);
+				return producerRepository.save(newProducer);
+			});
+			var movieProducer = new MovieProducer();
+			movieProducer.setMovie(movie);
+			movieProducer.setProducer(resolvedProducer);
 			movieProducerRepository.save(movieProducer);
 		});
 	}
 
 	private String replaceCommas(String producers) {
-		LOGGER.debug("Producers: " + producers);
+		LOGGER.debug("Producers: {}", producers);
 		producers = producers.replace(",and ", ", ");
 		producers = producers.replace(", and ", ", ");
 		producers = producers.replace(" and ", ", ");
-		LOGGER.debug("Producers: " + producers);
+		LOGGER.debug("Producers: {}", producers);
 		return producers;
 	}
 

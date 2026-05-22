@@ -1,7 +1,6 @@
 package com.awards.golden.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,12 +31,9 @@ public class ProducerController {
 
 	@GetMapping("/{idProducer}")
 	public ResponseEntity<Producer> getProducer(@PathVariable(value = "idProducer") Long idProducer) {
-		Optional<Producer> optProducer = producerRepository.findById(idProducer);
-		if (optProducer.isPresent()) {
-			return new ResponseEntity<>(optProducer.get(), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+		return producerRepository.findById(idProducer)
+				.map(producer -> new ResponseEntity<>(producer, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
 
 	@PostMapping
@@ -47,18 +43,12 @@ public class ProducerController {
 
 	@PutMapping
 	public void updateProducer(@RequestBody Producer producer) {
-		Optional<Producer> optProducer = producerRepository.findById(producer.getId());
-		if (optProducer.isPresent()) {
-			producerRepository.save(producer);
-		}
+		producerRepository.findById(producer.getId()).ifPresent(existing -> producerRepository.save(producer));
 	}
 
 	@DeleteMapping("/{idProducer}")
 	public void deleteProducer(@PathVariable(value = "idProducer") Long idProducer) {
-		Optional<Producer> optProducer = producerRepository.findById(idProducer);
-		if (optProducer.isPresent()) {
-			producerRepository.deleteById(idProducer);
-		}
+		producerRepository.findById(idProducer).ifPresent(producer -> producerRepository.deleteById(idProducer));
 	}
 
 }
