@@ -2,8 +2,7 @@ package com.awards.golden.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
+import java.util.function.BiPredicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,15 +29,15 @@ public class MovieProducerService {
 	public void calculateWinningRange() {
 		LOGGER.debug("calculateWinningRange");
 		producerRepository.findAll().forEach(producer -> {
-			List<MovieProducer> movieProducers = movieProducerRepository
+			var movieProducers = movieProducerRepository
 					.findByProducerAndMovieIsWinnerOrderByMovieYearDesc(producer, Boolean.TRUE);
 			if (movieProducers.size() > 1) {
-				ListIterator<MovieProducer> listIterator = movieProducers.listIterator();
-				MovieProducer lastMovieProducer = listIterator.next();
+				var listIterator = movieProducers.listIterator();
+				var lastMovieProducer = listIterator.next();
 				while (listIterator.hasNext()) {
-					Integer lastYear = lastMovieProducer.getMovie().getYear();
-					MovieProducer nextMovieProducer = listIterator.next();
-					Integer nextYear = nextMovieProducer.getMovie().getYear();
+					var lastYear = lastMovieProducer.getMovie().getYear();
+					var nextMovieProducer = listIterator.next();
+					var nextYear = nextMovieProducer.getMovie().getYear();
 
 					lastMovieProducer.setWinningRange(lastYear - nextYear);
 					lastMovieProducer.setLastWinYear(nextYear);
@@ -51,56 +50,28 @@ public class MovieProducerService {
 	}
 
 	public WinningRangeDTO getWinningRange() {
-		WinningRangeDTO winningRangeDTO = new WinningRangeDTO();
-		List<ProducerDTO> min = new ArrayList<>();
-		List<ProducerDTO> max = new ArrayList<>();
+		var min = collectRange(movieProducerRepository.findAllByWinningRangeNotNullOrderByWinningRange(),
+				(previousRange, currentRange) -> previousRange < currentRange);
+		var max = collectRange(movieProducerRepository.findAllByWinningRangeNotNullOrderByWinningRangeDesc(),
+				(previousRange, currentRange) -> previousRange > currentRange);
+		return new WinningRangeDTO(min, max);
+	}
 
-		// List<Producer> minRange =
-		// producerRepository.findAllByMinWinningRangeNotNullOrderByMinWinningRange();
-		// List<Producer> maxRange =
-		// producerRepository.findAllByMaxWinningRangeNotNullOrderByMaxWinningRangeDesc();
-		List<MovieProducer> minRange = movieProducerRepository.findAllByWinningRangeNotNullOrderByWinningRange();
-		List<MovieProducer> maxRange = movieProducerRepository.findAllByWinningRangeNotNullOrderByWinningRangeDesc();
-		//
-		ListIterator<MovieProducer> minRangeIterator = minRange.listIterator();
-		MovieProducer previous = null;
-		while (minRangeIterator.hasNext()) {
-			MovieProducer movieProducer = minRangeIterator.next();
-			if (Objects.nonNull(previous) && previous.getWinningRange() < movieProducer.getWinningRange()) {
+	private List<ProducerDTO> collectRange(List<MovieProducer> range, BiPredicate<Integer, Integer> stop) {
+		var result = new ArrayList<ProducerDTO>();
+		Integer previousRange = null;
+		for (var movieProducer : range) {
+			if (previousRange != null && stop.test(previousRange, movieProducer.getWinningRange())) {
 				break;
 			}
-			ProducerDTO producerDTO = ProducerDTO
-					.builder()
-					.producer(movieProducer.getProducer().getName())
-					.interval(movieProducer.getWinningRange())
-					.previousWin(movieProducer.getLastWinYear())
-					.followingWin(movieProducer.getMovie().getYear())
-					.build();
-			min.add(producerDTO);
-			previous = movieProducer;
+			result.add(new ProducerDTO(
+					movieProducer.getProducer().getName(),
+					movieProducer.getWinningRange(),
+					movieProducer.getLastWinYear(),
+					movieProducer.getMovie().getYear()));
+			previousRange = movieProducer.getWinningRange();
 		}
-
-		ListIterator<MovieProducer> maxRangeIterator = maxRange.listIterator();
-		previous = null;
-		while (maxRangeIterator.hasNext()) {
-			MovieProducer movieProducer = maxRangeIterator.next();
-			if (Objects.nonNull(previous) && previous.getWinningRange() > movieProducer.getWinningRange()) {
-				break;
-			}
-			ProducerDTO producerDTO = ProducerDTO
-					.builder()
-					.producer(movieProducer.getProducer().getName())
-					.interval(movieProducer.getWinningRange())
-					.previousWin(movieProducer.getLastWinYear())
-					.followingWin(movieProducer.getMovie().getYear())
-					.build();
-			max.add(producerDTO);
-			previous = movieProducer;
-		}
-
-		winningRangeDTO.setMin(min);
-		winningRangeDTO.setMax(max);
-		return winningRangeDTO;
+		return result;
 	}
 
 }

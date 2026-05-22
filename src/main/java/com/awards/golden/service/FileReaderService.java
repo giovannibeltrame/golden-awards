@@ -1,6 +1,5 @@
 package com.awards.golden.service;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -27,27 +26,24 @@ public class FileReaderService {
 	private MovieService movieService;
 
 	public void readFile(InputStream inputStream) throws Exception {
-		try {
-			if (Objects.isNull(inputStream)) {
-				inputStream = this.getFileInputStream(MOVIELIST_CSV);
-			}
-			movieService.getMoviesFromRecords(this.readCsvFile(inputStream, Boolean.TRUE));
+		try (var stream = Objects.isNull(inputStream) ? this.getFileInputStream(MOVIELIST_CSV) : inputStream) {
+			movieService.getMoviesFromRecords(this.readCsvFile(stream, Boolean.TRUE));
 		} catch (Exception e) {
 			LOGGER.error("ERROR", e);
 			throw e;
 		}
 	}
-	
+
 	public List<Record> readCsvFile(InputStream inputStream, Boolean headerExtractionEnabled) {
-		CsvParserSettings settings = new CsvParserSettings();
+		var settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(headerExtractionEnabled);
 		settings.detectFormatAutomatically();
-		CsvParser parser = new CsvParser(settings);
+		var parser = new CsvParser(settings);
 		return parser.parseAllRecords(inputStream);
 	}
 
 	public FileInputStream getFileInputStream(String filePath) throws FileNotFoundException {
-		return new FileInputStream(new File(new FileSystemResource(filePath).getFile().getAbsolutePath()));
+		return new FileInputStream(new FileSystemResource(filePath).getFile());
 	}
 
 }

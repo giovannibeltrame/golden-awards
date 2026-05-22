@@ -1,7 +1,6 @@
 package com.awards.golden.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,33 +37,24 @@ public class MovieController {
 	
 	@GetMapping("/{idMovie}")
 	public ResponseEntity<Movie> getMovie(@PathVariable(value = "idMovie") Long idMovie) {
-		Optional<Movie> optMovie = movieRepository.findById(idMovie);
-		if (optMovie.isPresent()) {
-			return new ResponseEntity<>(optMovie.get(), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+		return movieRepository.findById(idMovie)
+				.map(movie -> new ResponseEntity<>(movie, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
-	
+
 	@PostMapping
 	public void createMovie(@RequestBody Movie movie) {
 		movieRepository.save(movie);
 	}
-	
+
 	@PutMapping
 	public void updateMovie(@RequestBody Movie movie) {
-		Optional<Movie> optMovie = movieRepository.findById(movie.getId());
-		if (optMovie.isPresent()) {
-			movieRepository.save(movie);
-		}
+		movieRepository.findById(movie.getId()).ifPresent(existing -> movieRepository.save(movie));
 	}
-	
+
 	@DeleteMapping("/{idMovie}")
 	public void deleteMovie(@PathVariable(value = "idMovie") Long idMovie) {
-		Optional<Movie> optMovie = movieRepository.findById(idMovie);
-		if (optMovie.isPresent()) {
-			movieRepository.deleteById(idMovie);
-		}
+		movieRepository.findById(idMovie).ifPresent(movie -> movieRepository.deleteById(idMovie));
 	}
 	
 	@PostMapping("upload-file")

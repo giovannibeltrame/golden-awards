@@ -1,7 +1,6 @@
 package com.awards.golden.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,33 +36,26 @@ public class MovieProducerController {
 	
 	@GetMapping("/{idMovieProducer}")
 	public ResponseEntity<MovieProducer> getMovieProducer(@PathVariable(value = "idMovieProducer") Long idMovieProducer) {
-		Optional<MovieProducer> optMovieProducer = movieProducerRepository.findById(idMovieProducer);
-		if (optMovieProducer.isPresent()) {
-			return new ResponseEntity<>(optMovieProducer.get(), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+		return movieProducerRepository.findById(idMovieProducer)
+				.map(movieProducer -> new ResponseEntity<>(movieProducer, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
-	
+
 	@PostMapping
 	public void createMovieProducer(@RequestBody MovieProducer movieProducer) {
 		movieProducerRepository.save(movieProducer);
 	}
-	
+
 	@PutMapping
 	public void updateMovieProducer(@RequestBody MovieProducer movieProducer) {
-		Optional<MovieProducer> optMovieProducer = movieProducerRepository.findById(movieProducer.getId());
-		if (optMovieProducer.isPresent()) {
-			movieProducerRepository.save(movieProducer);
-		}
+		movieProducerRepository.findById(movieProducer.getId())
+				.ifPresent(existing -> movieProducerRepository.save(movieProducer));
 	}
-	
+
 	@DeleteMapping("/{idMovieProducer}")
 	public void deleteMovieProducer(@PathVariable(value = "idMovieProducer") Long idMovieProducer) {
-		Optional<MovieProducer> optMovieProducer = movieProducerRepository.findById(idMovieProducer);
-		if (optMovieProducer.isPresent()) {
-			movieProducerRepository.deleteById(idMovieProducer);
-		}
+		movieProducerRepository.findById(idMovieProducer)
+				.ifPresent(movieProducer -> movieProducerRepository.deleteById(idMovieProducer));
 	}
 	
 	@GetMapping("/winning-range")
