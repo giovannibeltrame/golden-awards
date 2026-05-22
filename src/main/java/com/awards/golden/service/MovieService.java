@@ -1,7 +1,10 @@
 package com.awards.golden.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +48,14 @@ public class MovieService {
 					.build();
 			movieRepository.save(movie);
 
-			String producers = this.replaceCommas(record.getString("producers"));
+			String producers = Objects.requireNonNullElse(record.getString("producers"), "");
+			producers = this.replaceCommas(producers);
 
 			this.getMovieProducersFromProducers(movie, producers);
 		});
 	}
 
-	private void getMovieProducersFromProducers(Movie movie, String producers) {
+	private void getMovieProducersFromProducers(Movie movie, @Nonnull String producers) {
 		Splitter.on(",").trimResults().split(producers).forEach(producer -> {
 			LOGGER.debug("Producer: " + producer);
 			Optional<Producer> optProducer = producerRepository.findByNameIgnoreCase(producer);
