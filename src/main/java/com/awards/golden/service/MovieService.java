@@ -19,23 +19,23 @@ import com.univocity.parsers.common.record.Record;
 
 @Service
 public class MovieService {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(MovieService.class);
 	private static final String YES = "yes";
-	
+
 	@Autowired
 	private MovieRepository movieRepository;
-	
+
 	@Autowired
 	private ProducerRepository producerRepository;
-	
+
 	@Autowired
 	private MovieProducerRepository movieProducerRepository;
 
 	public void getMoviesFromRecords(List<Record> records) {
 		records.forEach(record -> {
-			LOGGER.info("RECORD: " + record);
-			
+			LOGGER.debug("RECORD: " + record);
+
 			Movie movie = Movie
 					.builder()
 					.year(record.getInt("year"))
@@ -46,14 +46,14 @@ public class MovieService {
 			movieRepository.save(movie);
 
 			String producers = this.replaceCommas(record.getString("producers"));
-			
+
 			this.getMovieProducersFromProducers(movie, producers);
 		});
 	}
 
 	private void getMovieProducersFromProducers(Movie movie, String producers) {
 		Splitter.on(",").trimResults().split(producers).forEach(producer -> {
-			LOGGER.info("Producer: " + producer);
+			LOGGER.debug("Producer: " + producer);
 			Optional<Producer> optProducer = producerRepository.findByNameIgnoreCase(producer);
 			MovieProducer movieProducer;
 			if (optProducer.isPresent()) {
@@ -68,11 +68,11 @@ public class MovieService {
 	}
 
 	private String replaceCommas(String producers) {
-		LOGGER.info("Producers: " + producers);
+		LOGGER.debug("Producers: " + producers);
 		producers = producers.replace(",and ", ", ");
 		producers = producers.replace(", and ", ", ");
 		producers = producers.replace(" and ", ", ");
-		LOGGER.info("Producers: " + producers);
+		LOGGER.debug("Producers: " + producers);
 		return producers;
 	}
 

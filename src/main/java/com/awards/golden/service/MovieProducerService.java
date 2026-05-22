@@ -28,7 +28,7 @@ public class MovieProducerService {
 	private MovieProducerRepository movieProducerRepository;
 
 	public void calculateWinningRange() {
-		LOGGER.info("calculateWinningRange");
+		LOGGER.debug("calculateWinningRange");
 		producerRepository.findAll().forEach(producer -> {
 			List<MovieProducer> movieProducers = movieProducerRepository
 					.findByProducerAndMovieIsWinnerOrderByMovieYearDesc(producer, Boolean.TRUE);
@@ -39,11 +39,11 @@ public class MovieProducerService {
 					Integer lastYear = lastMovieProducer.getMovie().getYear();
 					MovieProducer nextMovieProducer = listIterator.next();
 					Integer nextYear = nextMovieProducer.getMovie().getYear();
-					
+
 					lastMovieProducer.setWinningRange(lastYear - nextYear);
 					lastMovieProducer.setLastWinYear(nextYear);
 					movieProducerRepository.save(lastMovieProducer);
-					
+
 					lastMovieProducer = nextMovieProducer;
 				}
 			}
@@ -54,12 +54,14 @@ public class MovieProducerService {
 		WinningRangeDTO winningRangeDTO = new WinningRangeDTO();
 		List<ProducerDTO> min = new ArrayList<>();
 		List<ProducerDTO> max = new ArrayList<>();
-		
-//		List<Producer> minRange = producerRepository.findAllByMinWinningRangeNotNullOrderByMinWinningRange();
-//		List<Producer> maxRange = producerRepository.findAllByMaxWinningRangeNotNullOrderByMaxWinningRangeDesc();
+
+		// List<Producer> minRange =
+		// producerRepository.findAllByMinWinningRangeNotNullOrderByMinWinningRange();
+		// List<Producer> maxRange =
+		// producerRepository.findAllByMaxWinningRangeNotNullOrderByMaxWinningRangeDesc();
 		List<MovieProducer> minRange = movieProducerRepository.findAllByWinningRangeNotNullOrderByWinningRange();
 		List<MovieProducer> maxRange = movieProducerRepository.findAllByWinningRangeNotNullOrderByWinningRangeDesc();
-//		
+		//
 		ListIterator<MovieProducer> minRangeIterator = minRange.listIterator();
 		MovieProducer previous = null;
 		while (minRangeIterator.hasNext()) {
@@ -77,7 +79,7 @@ public class MovieProducerService {
 			min.add(producerDTO);
 			previous = movieProducer;
 		}
-		
+
 		ListIterator<MovieProducer> maxRangeIterator = maxRange.listIterator();
 		previous = null;
 		while (maxRangeIterator.hasNext()) {
@@ -86,16 +88,16 @@ public class MovieProducerService {
 				break;
 			}
 			ProducerDTO producerDTO = ProducerDTO
-										.builder()
-										.producer(movieProducer.getProducer().getName())
-										.interval(movieProducer.getWinningRange())
-										.previousWin(movieProducer.getLastWinYear())
-										.followingWin(movieProducer.getMovie().getYear())
-										.build();
+					.builder()
+					.producer(movieProducer.getProducer().getName())
+					.interval(movieProducer.getWinningRange())
+					.previousWin(movieProducer.getLastWinYear())
+					.followingWin(movieProducer.getMovie().getYear())
+					.build();
 			max.add(producerDTO);
 			previous = movieProducer;
 		}
-		
+
 		winningRangeDTO.setMin(min);
 		winningRangeDTO.setMax(max);
 		return winningRangeDTO;
