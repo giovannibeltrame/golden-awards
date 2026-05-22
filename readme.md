@@ -24,7 +24,7 @@ Para iniciar a aplicação, você deve rodar o comando abaixo na pasta raiz do p
 
 Para executar os testes de integração da API, execute o comando abaixo:
 
-`mvn clean test`
+`mvnw clean test`
 
 ##### Conhecendo as operações da API
 
